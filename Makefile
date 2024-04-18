@@ -14,11 +14,11 @@ setup: install activate
 
 ## Pylint backend
 pylint:
-	pylint ./semantic/backend
+	pylint ./app/backend
 
 ## Flake8 backend
 flake8:
-	flake8 ./semantic/backend
+	flake8 ./app/backend
 
 ## Lint code
 lint: pylint flake8
@@ -54,7 +54,7 @@ frontend:
 
 backend:
 	@echo "$$(tput bold)Starting backend:$$(tput sgr0)"
-	poetry run uvicorn semantic.backend.main:app --host localhost --reload --port 8000
+	poetry run uvicorn app.backend.main:app --host localhost --reload --port 8000
 
 ## Run docker
 run: frontend backend
