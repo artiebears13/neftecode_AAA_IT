@@ -2,11 +2,12 @@ import os
 import pandas as pd
 import numpy as np
 import io
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException, APIRouter
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, APIRouter, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+import csv
 
+from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
@@ -18,36 +19,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-def process_csv(input_csv):
-    df_bytes = io.BytesIO(input_csv.file.file.read())
-    df = pd.read_csv(df_bytes)
-    # тут модель
-
-    path = 'backend/tmp/example.csv'
-    output_csv = io.BytesIO()
-    df.to_csv(output_csv, index=False)
-    output_csv.seek(0)
-
-    return output_csv
-
-
+def model(data: pd.DataFrame) -> pd.DataFrame:
+    return data
 
 @app.post("/upload")
 async def upload_file(files: list[UploadFile] = File(...), doctype: str = Form(...)):
-    path = 'backend/example/example.csv'
-    print(os.path.exists(f'{path}'))
-    if os.path.exists(f'{path}'):
-        return FileResponse(f'{path}')
-    else:
-        raise HTTPException(status_code=500, detail="File not found")
+    try:
+        df_bytes = io.BytesIO(files[0].file.read())
+        df = pd.read_csv(df_bytes,)
+        df = model(df)
 
+        df.rename(columns={df.columns[0]:df.columns[0]+','}, inplace=True)
+        df.iloc[:, 0] = df.iloc[:, 0].astype(str) + ','
+        output = io.StringIO()
+        df.to_string(output, index=False,)
 
-# @app.post("/handle_example")
-# async def handle_example(request: dict):
-#
-#     else:
-#         return JSONResponse(content={"message": "Failed to upload files", "error": "wrong format"}, status_code=500)
-#
-#     return JSONResponse(content=res, status_code=200)
-
+        return StreamingResponse(output.getvalue(), media_type="text/csv",)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={'error': str(e)})
