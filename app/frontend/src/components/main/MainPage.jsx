@@ -3,46 +3,25 @@ import "./style.css";
 import ExampleModal from "../modal/ExampleModal";
 import TypeModal from "../modal/TypeModal";
 import FileUploader from "../file_uploader/FileUploader";
-import {TypesDropdown} from "../types_dropdown/TypesDropdown";
 import {Categories} from "../categories/Categories";
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-
+import MyToast from "../toast/MyToast";
+import logo from "../../img/science.png";
 
 class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentDocType: "bank",
-            documentTypes: {
-                "bank": "банк",
-                "test": "тест"
-            },
-            imageURL: null,
             loading: false,
             isExampleModalOpen: false,
             isTypeModalOpen: false,
-            responseData: {}
+            responseData: {},
+            showToast: false,
+            ToastMessage: 'hello',
+            toastVariant: 'success',
         };
     }
 
-    componentDidMount() {
-        fetch(`${process.env.REACT_APP_BACKEND}/form_params`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server error');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // console.log("init data: ", data);
-                this.setState({documentTypes: data}); // Set the fetched data to state
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                alert('Сервер не отвечает'); // Display alert for status 500 error
-            });
-    }
+
 
 
     setFiles = (files) => {
@@ -160,38 +139,42 @@ class MainPage extends React.Component {
         event.preventDefault();
     };
 
+
+    showToast = (message, toastVariant="success") => {
+
+        console.log("toggle Toast");
+        this.setState({ToastMessage: message});
+        this.setState({toastVariant: toastVariant});
+        this.setState({showToast: true});
+        if (!this.state.showToast) {
+            setTimeout(() => {this.setState({showToast: false})}, 3000)
+        }
+    };
+    hideToast = () => {
+
+        this.setState({showToast: false});
+
+    };
+
     render() {
         const {loading, isExampleModalOpen, responseData} = this.state;
-        const tooltipMargin = {
-            marginTop: '-10px', // Adjust the margin as needed
-        };
         return (
             <div className="main-page">
-                <div className="container mt-4 main-bg">
-                    <div className="main-header">
-                        <h3>Выберите тип документа:</h3>
-                        <OverlayTrigger
-                            overlay={<Tooltip style={tooltipMargin}>Добавить тип документа</Tooltip>}
-                        >
-                            <button
-                                className="btn btn-addtype"
-                                onClick={this.openTypeModal}
-                            >+
-                            </button>
-                        </OverlayTrigger>
-                    </div>
-                    <TypesDropdown
-                        onChange={this.onDocumentTypeChange}
-                        currentDocType={this.state.currentDocType}
-                        documentTypes={this.state.documentTypes}
-                    />
+                <MyToast
+                    message={this.state.ToastMessage}
+                    show={this.state.showToast}
+                    hideToggle={this.hideToast}
+                    variant={this.state.toastVariant}
+                />
+
+                <div className="container mt-4 main-bg z-100">
+
                     <FileUploader
                         openModal={this.openExampleModal}
                         setFiles={this.setFiles}
-                        currentDocType={this.state.currentDocType}
-                        documentTypes={this.state.documentTypes}
                         setResponse={this.setResponse}
                         responseData={responseData}
+                        toast={this.showToast}
                     />
 
                     {
@@ -204,7 +187,7 @@ class MainPage extends React.Component {
                     }
 
                     {loading && (
-                        <div className="big-center loader"></div>
+                        <div className="big-center loader z-100"></div>
                     )}
                     <div>
                         <ExampleModal

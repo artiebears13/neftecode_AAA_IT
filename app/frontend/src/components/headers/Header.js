@@ -1,6 +1,6 @@
 import React from 'react';
 import "./style.css"
-import hacks_ai from "../../img/hacks_ai.png"
+import logo from "../../img/logo.svg"
 
 const Header = ({ currentPage, setCurrentPage }) => {
     return (
@@ -25,11 +25,6 @@ const Header = ({ currentPage, setCurrentPage }) => {
                             </button>
                         </li>
 
-                        <li className={`nav-item ${currentPage === 'zip' ? 'active' : ''}`}>
-                            <button className="nav-link btn btn-link" onClick={() => setCurrentPage('zip')}>
-                                Загрузка архива
-                            </button>
-                        </li>
                         <li className={`nav-item ${currentPage === 'info' ? 'active' : ''}`}>
                             <button className="nav-link btn btn-link" onClick={() => setCurrentPage('info')}>
                                 Команда
@@ -38,7 +33,7 @@ const Header = ({ currentPage, setCurrentPage }) => {
                     </ul>
                 </div>
             </div>
-            <img src={hacks_ai} height="30px" alt="Logo" className="navbar-img"/>
+            <img src={logo} height="100px" alt="Logo" className="navbar-img"/>
         </nav>
     );
 };

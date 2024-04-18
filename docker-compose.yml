@@ -7,11 +7,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./semantic/backend:/app/backend
+      - ./app/backend:/app/backend
       - ./data/model.sav:/app/data/model.sav
       - ./data/example_handle.zip:/app/data/example_handle.zip
-      - ./semantic/data.json:/app/data.json
-      - ./semantic/backend/tmp:/app/tmp
+      - ./app/data.json:/app/data.json
+      - ./app/backend/tmp:/app/tmp
     command: >
        /bin/sh -c "python -m poetry run uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload"
 
@@ -23,8 +23,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./semantic/frontend/src:/app/src
-      - ./semantic/frontend/public:/app/public
+      - ./app/frontend/src:/app/src
+      - ./app/frontend/public:/app/public
     command: >
         /bin/sh -c "npm start"
 
