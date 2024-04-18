@@ -1,7 +1,6 @@
 import React, {useState, useRef} from 'react';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import { parse } from 'papaparse';
 import {CsvTable} from "../csv_table/CsvTable";
 
 const FileUploader = (props) => {
@@ -24,7 +23,7 @@ const FileUploader = (props) => {
     const checkFiles = (files) => {
         const maxFileSize = 5 * 1024 * 1024; // 20MB in bytes
         if (!(files && files.length)) {
-            alert("Загрузите файлы")
+            props.toast("Загрузите файлы", 'danger')
             return false;
         }
 
@@ -96,6 +95,7 @@ const FileUploader = (props) => {
             } else {
                 console.error('Error uploading files:', response.statusText, response.error, response.message, response.content);
             }
+            props.toast("Файлы обработаны")
             props.setFiles(selectedFiles);
             setUploadedFile(selectedFiles[0])
             setSelectedFiles([]);
@@ -146,13 +146,7 @@ const FileUploader = (props) => {
     }
 
 
-    const popoverContent = `Допустимые форматы: 
-    pdf, 
-    doc, 
-    docx, 
-    xlsx, 
-    txt, 
-    rtf`;
+    const popoverContent = `Допустимые форматы: csv`;
 
     return (
         <div className={"z-100 mt-20"}>
@@ -178,6 +172,7 @@ const FileUploader = (props) => {
                 />
             </div>
 
+
             <div className="input-control__buttons">
                 <button className="btn btn-primary z-100" onClick={handleUpload}>Отправить</button>
                 {/*<button className="btn btn-success modal-button" onClick={props.openModal}>Примеры запросов</button>*/}
@@ -193,11 +188,34 @@ const FileUploader = (props) => {
                 <div className="big-center loader z-100"></div>
             )}
             <div className="uploaded-file__container z-100">
+                <div className="uploaded-file__container">
+                    {selectedFiles.length > 0 && (
+                        selectedFiles.map((file, i) => (
+                            <div className={`uploaded-file__item ${checkFileFormat(file) ? "" : "wrong"}`} key={i}>
+                                {checkFileFormat(file) ? (
+                                    <span
+                                        className="uploaded-file__filename">{file.name.length > 15 ? `${file.name.substring(0, 5)}...${file.name.substring(file.name.length - 10)}` : file.name}</span>
+                                ) : (
+                                    <OverlayTrigger
+                                        trigger={['hover', 'focus']}
+                                        placement="top"
+                                        overlay={renderPopover('Неверный формат', popoverContent)}
+                                    >
+                                        <span>{file.name}</span>
+                                    </OverlayTrigger>
+                                )}
+                                <button className="btn btn-close-white uploaded-file__button"
+                                        onClick={() => deleteFile(i)}>x
+                                </button>
+                            </div>
+                        ))
+                    )}
+                </div>
                 {uploadedFile && <CsvTable
                     fileText={uploadFileText}
                     filename={`processed_${uploadedFile.name}`}
                     handleDownload={handleDownload}
-                /> }
+                />}
             </div>
         </div>
     );

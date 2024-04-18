@@ -3,9 +3,7 @@ import "./style.css";
 import ExampleModal from "../modal/ExampleModal";
 import TypeModal from "../modal/TypeModal";
 import FileUploader from "../file_uploader/FileUploader";
-import {Categories} from "../categories/Categories";
 import MyToast from "../toast/MyToast";
-import logo from "../../img/science.png";
 
 class MainPage extends React.Component {
     constructor(props) {
@@ -177,14 +175,7 @@ class MainPage extends React.Component {
                         toast={this.showToast}
                     />
 
-                    {
-                        Object.keys(responseData).length > 0 && (
-                            <Categories
-                                responseData={responseData}
-                                docType={this.state.documentTypes[this.state.currentDocType]}
-                            />
-                        )
-                    }
+
 
                     {loading && (
                         <div className="big-center loader z-100"></div>
