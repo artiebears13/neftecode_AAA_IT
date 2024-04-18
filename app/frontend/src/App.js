@@ -5,7 +5,6 @@ import MainPage from './components/main/MainPage';
 import InfoPage from './components/info/InfoPage';
 import {Footer} from "./components/footer/Footer";
 import './index.css'
-import logo from './img/science.png'
 
 const App = () => {
     // State to manage the current page

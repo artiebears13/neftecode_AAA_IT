@@ -3,7 +3,6 @@ import ali from "../../img/ali.png"
 import artmed from "../../img/artmed.png"
 import donskow from "../../img/donskow.png"
 import ivan from "../../img/ivan.png"
-import tmn from "../../img/tmn.png"
 
 const InfoPage = () => {
     let we = {
