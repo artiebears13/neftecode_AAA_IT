@@ -35,7 +35,7 @@ def process_csv(input_csv):
 
 @app.post("/upload")
 async def upload_file(files: list[UploadFile] = File(...), doctype: str = Form(...)):
-    path = 'backend/tmp/example.csv'
+    path = 'backend/example/example.csv'
     print(os.path.exists(f'{path}'))
     if os.path.exists(f'{path}'):
         return FileResponse(f'{path}')
